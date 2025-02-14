@@ -10,7 +10,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendorController;
-use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminController; 
 
 Route::get('/', function () {
     return view('welcome');
@@ -73,7 +73,14 @@ Route::get('vendor/profile',[VendorController::class,'profile']);
 
 // Admin Dashboard Start Here
 
-Route::get('admin/login',[AdminController::class,'login']);
+// show register form 
+Route::get('admin/signup',[AdminController::class,'showRegistrationForm'])->name('signup');
+//add register 
+Route::post('admin/register',[AdminController::class,'register'])->name('register');
+
+
+
+Route::get('admin/login',[AdminController::class,'login'])->name('login');
 
 Route::get('admin/',[AdminController::class,'index']);
 

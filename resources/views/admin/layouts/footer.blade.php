@@ -8,3 +8,4 @@
 <script src="{{url('dashboard/js/datatables-simple-demo.js')}}"></script>
 </body>
 </html>
+

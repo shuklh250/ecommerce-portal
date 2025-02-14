@@ -2,14 +2,46 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
    
+
     public function login(){
         return view('admin/login');
     }
+// signup function 
+
+    public function showRegistrationForm(){
+
+        return view('admin/register');
+    }
+
+    // post register 
+
+     public function register(Request $request){
+$validated = $request->validate([
+'name'=>'required|string|max:255',
+'email'=>'required|string|email|unique:users',
+'password' => 'required|string|confirmed|min:8',
+
+]);
+
+$user = User::create([
+'name' => $validated['name'],
+'email' => $validated['email'],
+'password' => Hash::make($validated['password']),
+'role'=>'admin' 
+]);
+
+return redirect()->route('login')->with('success'   ,'Registration successfully');
+
+// dd($user);
+
+     }
 
     public function index(){
         return view('admin/index');
