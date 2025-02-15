@@ -33,10 +33,9 @@
                             </div>
                             <div>
 
-                                <form>
+                                <form action="{{ url('userlogin') }}"  method="POST">                                    
+                                    @csrf
                                     <div class="row">
-
-
                                         <div class="col-lg-12 mb-3">
                                             <label class="form-label">Username</label>
                                             <input type="text" class="form-control" placeholder="John Doe">
@@ -52,8 +51,7 @@
 
                                     </div>
 
-                                    <a href="#" type="btn"
-                                        class="btn btn-primary text-light form-control form-control-lg">Login</a>
+                                    <button type="submit" class="btn btn-primary text-light form-control form-control-lg">Login</button>
                                     <div class="text-center p-2">New user? <a href="{{route('signup')}}"
                                             class="text-decoration-none">Signup</a></div>
                                     <div class="text-center p-2">forgot password? <a href="{{url('admin/login')}}"

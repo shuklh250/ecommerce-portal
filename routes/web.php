@@ -82,6 +82,8 @@ Route::post('admin/register',[AdminController::class,'register'])->name('registe
 
 Route::get('admin/login',[AdminController::class,'login'])->name('login');
 
+Route::post('login', [AdminController::class, 'userlogin'])->name('userlogin');
+
 Route::get('admin/',[AdminController::class,'index']);
 
 Route::get('admin/order-detail',[AdminController::class,'orderdetail']);

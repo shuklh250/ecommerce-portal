@@ -39,9 +39,15 @@ $user = User::create([
 
 return redirect()->route('login')->with('success'   ,'Registration successfully');
 
-// dd($user);
 
      }
+
+// login veryfiry in database
+
+public function userlogin(){
+    
+
+}
 
     public function index(){
         return view('admin/index');
