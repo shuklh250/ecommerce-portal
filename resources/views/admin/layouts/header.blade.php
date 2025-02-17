@@ -15,9 +15,9 @@
 
     <style>
         /* Flash message css style */
-        .alert {
-            background-color: #4CAF50; /* Green */
-            color: white;
+        .alert-success {
+            /* background-color: #4CAF50; Green */
+            /* color: white; */
             padding: 20px;
             margin-bottom: 15px;
             border-radius: 5px;
@@ -25,7 +25,17 @@
             opacity: 1;
             transition: opacity 1s ease-out;
         }
-
+        .alert-danger {
+            /* background-color: #4CAF50; Green */
+            /* color: white; */
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            text-align: center;
+            opacity: 1;
+            transition: opacity 1s ease-out;
+        }
+       
         /* Fade out effect */
         .fade-out {
             opacity: 0;

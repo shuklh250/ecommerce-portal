@@ -11,10 +11,15 @@
                 <div class="col-lg-10">
                     <!-- Display Flash Message -->
                     @if (session('success'))
-                        <div class="alert" id="flash-message">
+                        <div class="alert  alert-success" id="flash-message">
                             {{ session('success') }}
                         </div>
                     @endif
+                    @if (session('Error'))
+                    <div class="alert alert-danger" id="flash-message">
+                        {{ session('Error') }}
+                    </div>
+                @endif
                     <div class="row">
                         <div class="col-lg-6">
                             <div>
@@ -33,20 +38,25 @@
                             </div>
                             <div>
 
-                                <form action="{{ url('userlogin') }}"  method="POST">                                    
+                                <form action="{{ route('userlogin') }}"  method="POST">                                    
                                     @csrf
                                     <div class="row">
                                         <div class="col-lg-12 mb-3">
-                                            <label class="form-label">Username</label>
-                                            <input type="text" class="form-control" placeholder="John Doe">
+                                            <label class="form-label">Email</label>
+                                            <input type="text" name="email" class="form-control" placeholder="John Doe">
                                         </div>
+                                        @error('email')
+                                            <div class="text-danger">{{ $message }}</div>
 
-
+                                        @enderror
 
                                         <div class="col-lg-12 mb-3">
                                             <label class="form-label">Password</label>
-                                            <input type="password" class="form-control" placeholder="******">
+                                            <input type="password" name="password" class="form-control" placeholder="******">
                                         </div>
+                                        @error('password')
+                                        <div class="text-danger">{{ $message }}</div>
+                                        @enderror
 
 
                                     </div>
