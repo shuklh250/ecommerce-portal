@@ -11,10 +11,22 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Emailcontroller;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+// email verifiaction 
+
+
+Route::get('send-email',[Emailcontroller::class,'sendEmail']);
+
+
+
+
+
+
 
 
 Route::get('/', [HomeController::class, 'index']);
