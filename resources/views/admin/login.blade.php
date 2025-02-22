@@ -3,7 +3,7 @@
     <title>Admin Login</title>
 @endpush
 
-@section('content')
+@section('content') 
     <section>
         <div class="container position-absolute top-50 start-50 translate-middle">
 

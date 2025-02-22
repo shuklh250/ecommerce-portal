@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail; // OTP email mail class import karna
+
+
 
 class AdminController extends Controller
 {
@@ -54,25 +58,67 @@ class AdminController extends Controller
         return view('admin/register');
     }
 
+
+
     // post register 
 
     public function register(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|confirmed|min:3',
 
         ]);
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => 'admin'
-        ]);
+        // $otp generate function here 
+        $otp = rand(100000, 999999); // 6digit otp 
 
-        return redirect()->route('login')->with('success', 'Registration successfully');
+        // otp store temporary in session or database 
+
+        session(['otp' => $otp, 'email' => $request->email, 'name' => $request->name, 'password' => $request->password]);
+        // send mail to user 
+
+
+
+        Mail::to($request->email)->send(new OtpMail($otp));
+
+        return redirect()->route('verifyOtpForm');
+
+
+        // $user = User::create([
+        //     'name' => $validated['name'],
+        //     'email' => $validated['email'],
+        //     'password' => Hash::make($validated['password']),
+        //     'role' => 'admin'
+        // ]);
+
+        // return redirect()->route('login')->with('success', 'Registration successfully');
+    }
+
+
+    // Show OTP verification form.
+
+
+    public function verifyOtp(Request $request)
+    {
+        // Validate OTP
+
+        if ($request->otp == session('opt')) {
+
+
+            $user = User::create([
+                'name' => session('name'),
+                'email' => session('email'),
+                'password' => Hash::make(session('password')), // Hash the password
+                'role' => 'admin'
+            ]);
+            Auth::login($user);
+
+            return redirect()->route('dashboard'); // Redirect to home or dashboard
+        } else {
+            return redirect()->back()->withErrors(['otp' => 'Invalid OTP']);
+        }
     }
 
 

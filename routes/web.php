@@ -21,11 +21,12 @@ Route::get('/', function () {
 
 
 Route::get('send-email',[Emailcontroller::class,'sendEmail']);
+Route::get('/mailform', action: [Emailcontroller::class, 'mailform']);
+Route::post('/mailform', action: [Emailcontroller::class, 'sendContactEmail'])->name('contact');
 
 
-
-
-
+Route::get('mail/verify-otp', [Emailcontroller::class, 'showOtpForm'])->name('verifyOtpForm');
+Route::post('mail/verify-otp', [Emailcontroller::class, 'verifyOtp'])->name('verifyOtp');
 
 
 
