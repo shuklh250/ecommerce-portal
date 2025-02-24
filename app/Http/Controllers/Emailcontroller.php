@@ -44,7 +44,8 @@ class Emailcontroller extends Controller
     {
         // Validate OTP
 
-        if ($request->otp == session('opt')) {
+        // dd($request);
+        if ($request->otp == session('otp')) {
 
 
             $user = User::create([
