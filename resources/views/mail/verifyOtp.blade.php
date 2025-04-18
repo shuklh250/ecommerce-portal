@@ -16,6 +16,7 @@
 
     <form method="POST" action="{{ route('verifyOtp') }}">
         @csrf
+        <input type="hidden" name="user_id" value="{{ $user_id }}">
         <label for="otp">Enter OTP</label>
         <input type="text" name="otp" required>
     

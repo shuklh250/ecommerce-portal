@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Emailcontroller;
+use App\Http\Controllers\PaymentController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,19 +21,22 @@ Route::get('/', function () {
 // email verifiaction 
 
 
-Route::get('send-email',[Emailcontroller::class,'sendEmail']);
+Route::get('send-email', [Emailcontroller::class, 'sendEmail']);
 Route::get('/mailform', action: [Emailcontroller::class, 'mailform']);
 Route::post('/mailform', action: [Emailcontroller::class, 'sendContactEmail'])->name('contact');
 
 
-Route::get('mail/verify-otp', [Emailcontroller::class, 'showOtpForm'])->name('verifyOtpForm');
+Route::get('mail/verify-otp/{user_id}', [Emailcontroller::class, 'showOtpForm'])->name('verifyOtpForm');
 Route::post('mail/verify-otp', [Emailcontroller::class, 'verifyOtp'])->name('verifyOtp');
 
 
+Route::get('/payment', [PaymentController::class, 'index']);
+Route::post('/payment', [PaymentController::class, 'payment'])->name('payment');
+Route::post('/verify', [App\Http\Controllers\PaymentController::class, 'verify'])->name('payment.verify');
 
 Route::get('/', [HomeController::class, 'index']);
 
-Route::get('/category/{slug}', [CategoryController::class, 'detail']);  
+Route::get('/category/{slug}', [CategoryController::class, 'detail']);
 
 Route::get('/category/electronics/{slug}', [SubcategoryController::class, 'detail']);
 
@@ -62,30 +66,29 @@ Route::get('user/settings/', [UserController::class, 'settings']);
 
 // Vendor Dashboard Route Srart Here:
 
-Route::prefix('vendor')->group(function(){
+Route::prefix('vendor')->group(function () {
 
     Route::get('/signup', [VendorController::class, 'signup']);
 
     Route::get('/login', [VendorController::class, 'login']);
-    
+
     Route::get('/forget', [VendorController::class, 'forget']);
-    
+
     Route::get('/dashboard', [VendorController::class, 'index']);
-    
+
     Route::get('/add-product', [VendorController::class, 'addproduct']);
-    
+
     Route::get('/view-product', [VendorController::class, 'viewproduct']);
-    
+
     Route::get('/edit-product', [VendorController::class, 'editproduct']);
-    
+
     Route::get('/orders', [VendorController::class, 'orders']);
-    
+
     Route::get('/order-detail', [VendorController::class, 'orderdetail']);
-    
+
     Route::get('/users', [VendorController::class, 'users']);
-    
+
     Route::get('/profile', [VendorController::class, 'profile']);
-    
 });
 
 // +++++++++Admin Dashboard Start Here++++++++++++++
@@ -93,6 +96,8 @@ Route::prefix('vendor')->group(function(){
 Route::prefix('admin')->group(function () {
 
     // ++++++++++++ Routes without middleware +++++++++++++++
+
+    Route::post('verify-otp', [AdminController::class, 'verifyOTP'])->name('verifyotp');
     Route::get('/signup', [AdminController::class, 'showRegistrationForm'])->name('signup');
 
     Route::post('/register', [AdminController::class, 'register'])->name('register');
@@ -105,23 +110,22 @@ Route::prefix('admin')->group(function () {
 
     //  ++++++++ Routes with middleware ++++++++++++
 
-Route::middleware(CheckAdmin::class)->group(function(){
+    Route::middleware(CheckAdmin::class)->group(function () {
 
-    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+        Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 
-    Route::get('/order-detail', [AdminController::class, 'orderdetail']);
+        Route::get('/order-detail', [AdminController::class, 'orderdetail']);
 
-    Route::get('/add-category', [AdminController::class, 'addcategory']);
+        Route::get('/add-category', [AdminController::class, 'addcategory']);
 
-    Route::get('/view-category', [AdminController::class, 'viewcategory']);
+        Route::get('/view-category', [AdminController::class, 'viewcategory']);
 
-    Route::get('/edit-category', [AdminController::class, 'editcategory']);
+        Route::get('/edit-category', [AdminController::class, 'editcategory']);
 
-    Route::get('/users', [AdminController::class, 'users']);
+        Route::get('/users', [AdminController::class, 'users']);
 
-    Route::get('/vendors', [AdminController::class, 'vendors']);
+        Route::get('/vendors', [AdminController::class, 'vendors']);
 
-    Route::get('/orders', [AdminController::class, 'orders']);
-});
-
+        Route::get('/orders', [AdminController::class, 'orders']);
+    });
 });

@@ -58,7 +58,7 @@
                                         </div>
                                         <div class="col-lg-12 mb-3">
                                             <label for="password_confirmation">Confirm Password</label>
-                                            <input type="password"  class="form-control" name="password_confirmation" >
+                                            <input type="password" class="form-control" name="password_confirmation">
                                             @error('password_confirmation')
                                                 <div class="text-danger">{{ $message }}</div>
                                             @enderror

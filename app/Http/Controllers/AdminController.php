@@ -3,63 +3,62 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\OtpMail; // OTP email mail class import karna
+use App\Mail\SendOTP;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 
 
 class AdminController extends Controller
 {
-
-
     public function login()
     {
         return view('admin/login');
     }
-
-
-
     // login veryfiry in database
 
     public function userlogin(Request $request)
     {
-        // dd($request);
+
+        $validate =  $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
 
         $user =  User::where('email', $request->email)->first();
-        if ($user) {
-            $validate =  $request->validate([
-                'email' => 'required|email',
-                'password' => 'required'
+      if(!$user){
+        return back()->with('Error', 'Invalid Email');
+      }elseif($user->role !== 'admin'){
+        return back()->with('Error', 'Access denied. Admins only.');
+      }elseif($user->isEmailverify != 1){
+        return back()->with('Error', 'Please verify your email before logging in.');
+      }
+      elseif($user->login != 0){
+        return back()->with('Error', 'you have already login.');
 
-            ]);
-
-            if (Auth::attempt($validate)) {
+      }
+        else {
+           if (Auth::attempt($validate)) {
+                $user = DB::table('users')->where('email',$request->email)->update(['login'=>'1']);
+                Session::put('admin_email', $request->email);
                 return redirect()->route('dashboard');
             } else {
                 return back()->with('Error', 'Invalid Password');
-            }
-        } else {
-            return back()->with('Error', 'Invalid Email');
-        }
+            } 
     }
-
-
-
+    }
     // signup function 
-
     public function showRegistrationForm()
     {
 
-        return view('admin/register');
+        return view('admin.register');
     }
-
-
-
     // post register 
 
     public function register(Request $request)
@@ -74,66 +73,65 @@ class AdminController extends Controller
         // $otp generate function here 
         $otp = rand(100000, 999999); // 6digit otp 
 
-        // otp store temporary in session or database 
+        // otp store temporary  database 
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+            'role'=>'admin'
+        ]);
+        // save otp in the user record
 
-        session(['otp' => $otp, 'email' => $request->email, 'name' => $request->name, 'password' => $request->password]);
-        // send mail to user 
+        $user->otp = $otp;
+        $user->save();
 
+        Mail::to($request->email)->send(new SendOTP($otp));
+        return redirect()->route('verifyOtpForm',['user_id' => $user->email]);
 
-
-        Mail::to($request->email)->send(new OtpMail($otp));
-
-        return redirect()->route('verifyOtpForm');
-
-
-        // $user = User::create([
-        //     'name' => $validated['name'],
-        //     'email' => $validated['email'],
-        //     'password' => Hash::make($validated['password']),
-        //     'role' => 'admin'
-        // ]);
-
-        // return redirect()->route('login')->with('success', 'Registration successfully');
     }
 
 
     // Show OTP verification form.
 
+    public function verifyOTP(Request $request){
 
-    public function verifyOtp(Request $request)
-    {
-        // Validate OTP
+         // Validate OTP entered by user
+         $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|numeric|digits:6',
+        ]);
 
-        if ($request->otp == session('opt')) {
+        // Find user by email
+        $user = User::where('email', $request->email)->first();
 
+        if ($user && $user->otp == $request->otp) {
+            // OTP is correct, delete OTP from the database
+            $user->otp = null;
 
-            $user = User::create([
-                'name' => session('name'),
-                'email' => session('email'),
-                'password' => Hash::make(session('password')), // Hash the password
-                'role' => 'admin'
+            // Set email_verified_at to current timestamp
+            $user->email_verified_at = Carbon::now();
+            $user->save();
+
+            // Respond with success message
+            return response()->json([
+                'message' => 'OTP verified successfully! Your email is now verified.',
+                'email_verified_at' => $user->email_verified_at
             ]);
-            Auth::login($user);
-
-            return redirect()->route('dashboard'); // Redirect to home or dashboard
         } else {
-            return redirect()->back()->withErrors(['otp' => 'Invalid OTP']);
+            return response()->json(['message' => 'Invalid OTP!'], 400);
         }
     }
-
 
     //  Logout function here 
 
     public function logout(Request $request)
     {
-
+        $value = Session::get('admin_email');
+        dd($value);
         Auth::logout();
-
         $request->session()->invalidate();
-        return redirect()->route('login')->with('success', 'You have logged out successfully!');
+        return redirect()->route('login')->with('Error', 'You have logged out successfully!');
     }
-
-
 
 
     public function index()
