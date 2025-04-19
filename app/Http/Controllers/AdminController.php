@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendOTP;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
 
@@ -32,26 +33,28 @@ class AdminController extends Controller
         ]);
 
         $user =  User::where('email', $request->email)->first();
-      if(!$user){
-        return back()->with('Error', 'Invalid Email');
-      }elseif($user->role !== 'admin'){
-        return back()->with('Error', 'Access denied. Admins only.');
-      }elseif($user->isEmailverify != 1){
-        return back()->with('Error', 'Please verify your email before logging in.');
-      }
-      elseif($user->login != 0){
-        return back()->with('Error', 'you have already login.');
-
-      }
-        else {
-           if (Auth::attempt($validate)) {
-                $user = DB::table('users')->where('email',$request->email)->update(['login'=>'1']);
+        if (!$user) {
+            return back()->with('Error', 'Invalid Email');
+        } elseif ($user->role !== 'admin') {
+            return back()->with('Error', 'Access denied. Admins only.');
+        } elseif ($user->isEmailverify != 1) {
+            return redirect()->route('show.emailreverify')->with('Error', 'Please verify your email before logging in.');
+        } else {
+            if (Auth::attempt($validate)) {
                 Session::put('admin_email', $request->email);
+
+                // generate new session token
+                $token = Str::random(60);
+                $user->session_token = $token;
+                $user->save();
+
+                session(['session_token' => $token]);
+
                 return redirect()->route('dashboard');
             } else {
                 return back()->with('Error', 'Invalid Password');
-            } 
-    }
+            }
+        }
     }
     // signup function 
     public function showRegistrationForm()
@@ -78,7 +81,7 @@ class AdminController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => $request->password,
-            'role'=>'admin'
+            'role' => 'admin'
         ]);
         // save otp in the user record
 
@@ -86,17 +89,16 @@ class AdminController extends Controller
         $user->save();
 
         Mail::to($request->email)->send(new SendOTP($otp));
-        return redirect()->route('verifyOtpForm',['user_id' => $user->email]);
-
+        return redirect()->route('verifyOtpForm', ['user_email' => $user->email]);
     }
 
 
     // Show OTP verification form.
 
-    public function verifyOTP(Request $request){
-
-         // Validate OTP entered by user
-         $request->validate([
+    public function verifyOTP(Request $request)
+    {
+        // Validate OTP entered by user
+        $request->validate([
             'email' => 'required|email',
             'otp' => 'required|numeric|digits:6',
         ]);
@@ -122,18 +124,45 @@ class AdminController extends Controller
         }
     }
 
+    public function emailreverify()
+    {
+
+        return view('emails.emailreverify');
+    }
+
     //  Logout function here 
 
     public function logout(Request $request)
     {
-        $value = Session::get('admin_email');
-        dd($value);
+
+        Session::forget('admin_email');
         Auth::logout();
         $request->session()->invalidate();
-        return redirect()->route('login')->with('Error', 'You have logged out successfully!');
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('success', 'You have logged out successfully!');
     }
+    // resend otp 
 
+    public function resendOtp(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return back()->with('Error', 'No account found with this email.');
+        }
+        if ($user->isEmailverify == 1) {
+            return redirect()->route('login')->with('success', 'Your email is already verified.');
+        }
 
+        $otp = rand(100000, 999999); // 6digit otp 
+
+        $user->otp = $otp;
+        $user->otp_expires_at = now()->addMinutes(5);
+        $user->save();
+
+        Mail::to($request->email)->send(new SendOTP($otp));
+        return redirect()->route('verifyOtpForm', ['user_email' => $request->email])->with('success', 'OTP resent to your email.');
+    }
     public function index()
     {
         return view('admin/index');

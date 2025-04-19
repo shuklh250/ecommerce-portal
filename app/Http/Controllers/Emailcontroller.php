@@ -29,22 +29,23 @@ class Emailcontroller extends Controller
         $request =  Mail::to($toEmail)->cc($moreuser)->send(new welcomeemail($message, $subject, $details));
     }
 
-    public function showOtpForm($user_id)
+    public function showOtpForm($user_email)
     {
-        return view('mail.verifyOtp', ['user_id' => $user_id]);
+        return view('mail.verifyOtp', ['user_email' => $user_email]);
     }
 
     public function verifyOtp(Request $request)
     {
 
         $email = $request->user_id;
+        // dd($email);
         $otp = $request->otp;
-
         $user = DB::table('users')
             ->where('email', $email)
             ->where('otp', $otp)
             ->get();
 
+        $updateuser = DB::table('users')->where('email', $email)->update(['isEmailverify' => 1, 'otp' => null]);
         if ($user->count() > 0) {
 
             return redirect()->route('login')->with('success', 'You register successfully please login !'); // Redirect to home or dashboard
@@ -53,9 +54,10 @@ class Emailcontroller extends Controller
         }
     }
 
+
+
     public function mailform()
     {
-
         return view('mail.mail');
     }
 
@@ -82,6 +84,5 @@ class Emailcontroller extends Controller
         } else {
             return back()->with('error', 'Unable to submit form , Please try again');
         }
-
     }
 }

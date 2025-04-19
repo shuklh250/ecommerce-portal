@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckAdmin;
+use App\Http\Middleware\CheckUserSession;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\SubcategoryController;
@@ -13,6 +14,7 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Emailcontroller;
 use App\Http\Controllers\PaymentController;
+use Illuminate\Routing\Route as RoutingRoute;
 
 Route::get('/', function () {
     return view('welcome');
@@ -25,14 +27,15 @@ Route::get('send-email', [Emailcontroller::class, 'sendEmail']);
 Route::get('/mailform', action: [Emailcontroller::class, 'mailform']);
 Route::post('/mailform', action: [Emailcontroller::class, 'sendContactEmail'])->name('contact');
 
-
-Route::get('mail/verify-otp/{user_id}', [Emailcontroller::class, 'showOtpForm'])->name('verifyOtpForm');
+Route::get('email-reverify', [AdminController::class, 'emailreverify'])->name('show.emailreverify');
+Route::post('/resendOtp', [AdminController::class, 'resendOtp'])->name('resendOtp');
+Route::get('mail/verify-otp/{user_email}', [Emailcontroller::class, 'showOtpForm'])->name('verifyOtpForm');
 Route::post('mail/verify-otp', [Emailcontroller::class, 'verifyOtp'])->name('verifyOtp');
-
-
 Route::get('/payment', [PaymentController::class, 'index']);
 Route::post('/payment', [PaymentController::class, 'payment'])->name('payment');
 Route::post('/verify', [App\Http\Controllers\PaymentController::class, 'verify'])->name('payment.verify');
+
+
 
 Route::get('/', [HomeController::class, 'index']);
 
@@ -98,6 +101,7 @@ Route::prefix('admin')->group(function () {
     // ++++++++++++ Routes without middleware +++++++++++++++
 
     Route::post('verify-otp', [AdminController::class, 'verifyOTP'])->name('verifyotp');
+
     Route::get('/signup', [AdminController::class, 'showRegistrationForm'])->name('signup');
 
     Route::post('/register', [AdminController::class, 'register'])->name('register');
@@ -106,11 +110,15 @@ Route::prefix('admin')->group(function () {
 
     Route::post('/login', [AdminController::class, 'userlogin'])->name('userlogin');
 
-    Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
+    // Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
+
+    // Route::match(['get', 'post'], '/logout', [AdminController::class, 'logout'])->name('logout');
+
+    Route::match(['get', 'post'], '/logout', [AdminController::class, 'logout'])->name('logout');
 
     //  ++++++++ Routes with middleware ++++++++++++
 
-    Route::middleware(CheckAdmin::class)->group(function () {
+    Route::middleware([CheckAdmin::class, CheckUserSession::class])->group(function () {
 
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 
