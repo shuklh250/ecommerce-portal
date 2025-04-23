@@ -38,7 +38,7 @@ Route::post('/verify', [App\Http\Controllers\PaymentController::class, 'verify']
 
 
 Route::get('/', [HomeController::class, 'index']);
-
+Route::get('/showverifyotp/{user_email}', [UserController::class, 'showverifyotp'])->name('user.show.verifyotp');
 Route::get('/category/{slug}', [CategoryController::class, 'detail']);
 
 Route::get('/category/electronics/{slug}', [SubcategoryController::class, 'detail']);
@@ -49,7 +49,9 @@ Route::get('/cart-list/{slug}', [CartController::class, 'list']);
 
 Route::get('/checkout/{slug}', [CheckoutController::class, 'checkout']);
 
-Route::get('register', [UserController::class, 'register']);
+Route::get('register', [UserController::class, 'showregister']);
+
+Route::post('register', [UserController::class, 'register'])->name('user.register');
 
 Route::get('register1', [UserController::class, 'register1']);
 

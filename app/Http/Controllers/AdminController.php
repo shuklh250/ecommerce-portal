@@ -84,11 +84,11 @@ class AdminController extends Controller
             'role' => 'admin'
         ]);
         // save otp in the user record
-
+        $name = $request->email;
         $user->otp = $otp;
         $user->save();
 
-        Mail::to($request->email)->send(new SendOTP($otp));
+        Mail::to($request->email)->send(new SendOTP($otp, $name));
         return redirect()->route('verifyOtpForm', ['user_email' => $user->email]);
     }
 
@@ -155,12 +155,12 @@ class AdminController extends Controller
         }
 
         $otp = rand(100000, 999999); // 6digit otp 
-
+        $name = $request->email;
         $user->otp = $otp;
         $user->otp_expires_at = now()->addMinutes(5);
         $user->save();
 
-        Mail::to($request->email)->send(new SendOTP($otp));
+        Mail::to($request->email)->send(new SendOTP($otp, $name));
         return redirect()->route('verifyOtpForm', ['user_email' => $request->email])->with('success', 'OTP resent to your email.');
     }
     public function index()
