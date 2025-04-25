@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Mail\SendOTP;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
 {
@@ -54,11 +56,31 @@ class UserController extends Controller
 
     public function login()
     {
-
-
         return view('login');
     }
+    public function verifylogin(Request $request)
+    {
 
+        $validate =  $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['status' => 'success', 'message' => 'Invalid Email']);
+        } elseif ($user->role !== 'user') {
+            return response()->json(['status' => 'success', 'message' => 'Access denied. Only registred user login']);
+        } elseif ($user->isEmailverify !== 1) {
+            return response()->json(['status' => 'success', 'message' => 'Please verify your email before logging in.']);
+        } else {
+            if (Auth::attempt($validate)) {
+                Session::put('user_email', $user->email);
+            } else {
+                return response()->json(['invalid passsword']);
+            }
+        }
+    }
     public function login1()
     {
         return view('login1');
@@ -82,6 +104,29 @@ class UserController extends Controller
 
     public function settings()
     {
-        return view('user/settings');
+        $email = Session::get('user_email');
+        $user = User::where('email', $email)->first();
+        // dd($user);
+        return view('user/settings', compact('user'));
+    }
+
+    public function updateprofile(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'phone' => ['required', 'regex:/^[6-9][0-9]{9}$/']
+        ]);
+
+        $email = Session::get('user_email');
+        $user = User::where('email', $email)->update([
+            'name' => $request->name,
+            'phone' => $request->phone
+
+        ]);
+        if (!$user) {
+            return redirect()->back()->with('success', 'Profile updated successfully');
+        } else {
+            return redirect()->back()->with('error', "Unable to update profile");
+        }
     }
 }

@@ -14,6 +14,7 @@ use App\Http\Controllers\VendorController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Emailcontroller;
 use App\Http\Controllers\PaymentController;
+use App\Http\Middleware\CheckUserType;
 use Illuminate\Routing\Route as RoutingRoute;
 
 Route::get('/', function () {
@@ -57,16 +58,31 @@ Route::get('register1', [UserController::class, 'register1']);
 
 Route::get('login', [UserController::class, 'login']);
 
+Route::post('login', [UserController::class, 'verifylogin'])->name('user.verifylogin');
+
+
 Route::get('login1', [UserController::class, 'login1']);
 
 // User Dashboard Routes Start Here:
-Route::get('user/', [UserController::class, 'index']);
 
-Route::get('user/order-history/', [UserController::class, 'history']);
+// Route::middleware([CheckAdmin::class, CheckUserSession::class])->group(
+//     function () {
 
-Route::get('user/detail/', [UserController::class, 'detail']);
 
-Route::get('user/settings/', [UserController::class, 'settings']);
+
+Route::middleware([CheckUserType::class])->group(function () {
+
+    Route::get('/profile', [UserController::class, 'index'])->name('profile');
+
+    Route::post('/update-profile', [UserController::class, 'updateprofile'])->name('update.profile');
+
+    Route::get('user/order-history/', [UserController::class, 'history']);
+
+    Route::get('user/detail/', [UserController::class, 'detail']);
+
+    Route::get('user/settings/', [UserController::class, 'settings']);
+});
+
 
 
 // Vendor Dashboard Route Srart Here:

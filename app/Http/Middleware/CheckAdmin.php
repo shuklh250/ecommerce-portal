@@ -41,5 +41,5 @@ class CheckAdmin
 
         // If the user is an admin, continue with the request
         return $next($request);
-    }
+    } 
 }
