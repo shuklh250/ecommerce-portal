@@ -10,3 +10,4 @@ class SubcategoryController extends Controller
         return view('subcategory');
     }
 }
+    

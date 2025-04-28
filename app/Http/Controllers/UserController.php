@@ -60,27 +60,60 @@ class UserController extends Controller
     }
     public function verifylogin(Request $request)
     {
+        if (Auth::guard('user')->check()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are already logged in.'
+            ]);
+        }
 
-        $validate =  $request->validate([
+        $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
         $user = User::where('email', $request->email)->first();
+
         if (!$user) {
-            return response()->json(['status' => 'success', 'message' => 'Invalid Email']);
-        } elseif ($user->role !== 'user') {
-            return response()->json(['status' => 'success', 'message' => 'Access denied. Only registred user login']);
-        } elseif ($user->isEmailverify !== 1) {
-            return response()->json(['status' => 'success', 'message' => 'Please verify your email before logging in.']);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid Email!'
+            ]);
+        }
+
+        if ($user->role !== 'user') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Access denied. Only registered users can login!'
+            ]);
+        }
+
+        if ($user->isEmailverify !== 1) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Please verify your email before logging in!'
+            ]);
+        }
+
+        if (Auth::guard('user')->attempt(['email' => $request->email, 'password' => $request->password])) {
+            Session::put('user_email', $user->email);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Login successful',
+                'redirect_url' => route('home'),
+            ]);
         } else {
-            if (Auth::attempt($validate)) {
-                Session::put('user_email', $user->email);
-            } else {
-                return response()->json(['invalid passsword']);
-            }
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid password'
+            ]);
         }
     }
+
+
+
+
+
     public function login1()
     {
         return view('login1');
@@ -128,5 +161,17 @@ class UserController extends Controller
         } else {
             return redirect()->back()->with('error', "Unable to update profile");
         }
+    }
+
+    //   logout fiunction 
+
+    public function logout(Request $request)
+    {
+        Auth::guard('user')->logout(); // ya admin/vendor
+
+        $request->session()->invalidate();
+        // $request->session()->regenerateToken();
+
+        return redirect()->route('login')->with('success', 'Logged out successfully!');
     }
 }

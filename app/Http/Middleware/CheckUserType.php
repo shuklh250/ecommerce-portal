@@ -16,11 +16,20 @@ class CheckUserType
      */
     public function handle(Request $request, Closure $next): Response
     {
-
-        if (!Auth::check() && Auth::user()->role !== 'admin') {
-            return redirect()->route('login')->with('Error', 'You must be logged in to access this page.');
+        // Check if user is authenticated and the role is 'user'
+        if (!Auth::guard('user')->check()) {
+            // If user is not authenticated, redirect to login page
+            return redirect()->route('login')->with('error', 'You must be logged in to access this page.');
         }
 
+        // If the user is authenticated, but role is not 'user', then deny access
+        if (Auth::guard('user')->user()->role != 'user') {
+            return redirect()->route('login')->with('error', 'You must be a valid user to access this page.');
+        }
+
+
+
+        // If everything is fine, allow the request to proceed
         return $next($request);
     }
 }

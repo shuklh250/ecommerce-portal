@@ -39,12 +39,21 @@
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown"
                     aria-expanded="false"><i class="fas fa-user fa-fw"></i></a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <li><a class="dropdown-item" href="{{url('user/settings')}}">Settings</a></li>
+                    <li><a class="dropdown-item" href="{{url('vendor/profile')}}">Profile</a></li>
                     <li><a class="dropdown-item" href="{{url('/')}}" target="_blank">GoTo Website</a></li>
                     <li>
                         <hr class="dropdown-divider" />
                     </li>
-                    <li><a class="dropdown-item" href="{{url('user/logout')}}">Logout</a></li>
+
+                    <li>
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="dropdown-item">Logout</button>
+                        </form>
+                        {{-- <a class="dropdown-item" href="{{Route('/logout')}}">Logout</a> --}}
+                    </li>
+
+
                 </ul>
             </li>
         </ul>

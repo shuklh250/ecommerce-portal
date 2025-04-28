@@ -30,12 +30,17 @@ class Emailcontroller extends Controller
         $user = DB::table('users')
             ->where('email', $email)
             ->where('otp', $otp)
-            ->get();
+            ->first();
+        if ($user) {
+            $updateuser = DB::table('users')->where('email', $email)->update(['isEmailverify' => 1, 'otp' => null]);
 
-        $updateuser = DB::table('users')->where('email', $email)->update(['isEmailverify' => 1, 'otp' => null]);
-        if ($user->count() > 0) {
-
-            return redirect()->route('login')->with('success', 'You register successfully please login !'); // Redirect to home or dashboard
+            if ($user->role == "admin") {
+                return redirect()->route('admin.login')->with('success', 'Registration successfully! Please login');
+            } elseif ($user->role == "vendor") {
+                return redirect()->route('vendor.login')->with('success', 'Registration successfully! Please login');
+            } else {
+                return redirect()->route('login')->with('success', 'Registration successfully! Please login');
+            }
         } else {
             return redirect()->back()->withErrors(['otp' => 'Invalid OTP']);
         }

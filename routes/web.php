@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\SessionGuardMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckAdmin;
 use App\Http\Middleware\CheckUserSession;
@@ -28,7 +29,7 @@ Route::get('send-email', [Emailcontroller::class, 'sendEmail']);
 Route::get('/mailform', action: [Emailcontroller::class, 'mailform']);
 Route::post('/mailform', action: [Emailcontroller::class, 'sendContactEmail'])->name('contact');
 
-Route::get('email-reverify', [AdminController::class, 'emailreverify'])->name('show.emailreverify');
+Route::get('email-reverify', [AdminController::class, 'emailr everify'])->name('show.emailreverify');
 Route::post('/resendOtp', [AdminController::class, 'resendOtp'])->name('resendOtp');
 Route::get('mail/verify-otp/{user_email}', [Emailcontroller::class, 'showOtpForm'])->name('verifyOtpForm');
 Route::post('mail/verify-otp', [Emailcontroller::class, 'verifyOtp'])->name('verifyOtp');
@@ -38,7 +39,7 @@ Route::post('/verify', [App\Http\Controllers\PaymentController::class, 'verify']
 
 
 
-Route::get('/', [HomeController::class, 'index']);
+Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/showverifyotp/{user_email}', [UserController::class, 'showverifyotp'])->name('user.show.verifyotp');
 Route::get('/category/{slug}', [CategoryController::class, 'detail']);
 
@@ -56,9 +57,10 @@ Route::post('register', [UserController::class, 'register'])->name('user.registe
 
 Route::get('register1', [UserController::class, 'register1']);
 
-Route::get('login', [UserController::class, 'login']);
+Route::get('login', [UserController::class, 'login'])->name('login');
 
-Route::post('login', [UserController::class, 'verifylogin'])->name('user.verifylogin');
+Route::get('/logout-user', [UserController::class, 'logout']);
+
 
 
 Route::get('login1', [UserController::class, 'login1']);
@@ -68,20 +70,18 @@ Route::get('login1', [UserController::class, 'login1']);
 // Route::middleware([CheckAdmin::class, CheckUserSession::class])->group(
 //     function () {
 
-
+Route::post('login', [UserController::class, 'verifylogin'])->name('user.verifylogin');
 
 Route::middleware([CheckUserType::class])->group(function () {
 
+    // This route will be available only if user is logged in and has role 'user'
     Route::get('/profile', [UserController::class, 'index'])->name('profile');
-
     Route::post('/update-profile', [UserController::class, 'updateprofile'])->name('update.profile');
-
     Route::get('user/order-history/', [UserController::class, 'history']);
-
     Route::get('user/detail/', [UserController::class, 'detail']);
-
-    Route::get('user/settings/', [UserController::class, 'settings']);
+    Route::get('user/settings/', [UserController::class, 'settings'])->name('user.setting');
 });
+
 
 
 
@@ -91,7 +91,7 @@ Route::prefix('vendor')->group(function () {
 
     Route::get('/signup', [VendorController::class, 'signup']);
 
-    Route::get('/login', [VendorController::class, 'login']);
+    Route::get('/login', [VendorController::class, 'login'])->name('vendor.login');
 
     Route::get('/forget', [VendorController::class, 'forget']);
 
@@ -124,9 +124,9 @@ Route::prefix('admin')->group(function () {
 
     Route::post('/register', [AdminController::class, 'register'])->name('register');
 
-    Route::get('/login', [AdminController::class, 'login'])->name('login');
+    Route::get('/login', [AdminController::class, 'login'])->name('admin.login');
 
-    Route::post('/login', [AdminController::class, 'userlogin'])->name('userlogin');
+    Route::post('/login', [AdminController::class, 'adminlogin'])->name('userlogin');
 
     // Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
 
@@ -136,14 +136,15 @@ Route::prefix('admin')->group(function () {
 
     //  ++++++++ Routes with middleware ++++++++++++
 
-    Route::middleware([CheckAdmin::class, CheckUserSession::class])->group(function () {
+    Route::middleware([CheckAdmin::class, CheckUserSession::class, SessionGuardMiddleware::class])->group(function () {
 
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 
         Route::get('/order-detail', [AdminController::class, 'orderdetail']);
 
-        Route::get('/add-category', [AdminController::class, 'addcategory']);
-
+        Route::get('/add-category', [CategoryController::class, 'addcategory'])->name('add.category');
+        Route::post('/insert-category', [CategoryController::class, 'insertcategory'])->name('insert.category');
+        Route::get('/fetch-category', [CategoryController::class, 'fetchcategory'])->name('fecth.category');
         Route::get('/view-category', [AdminController::class, 'viewcategory']);
 
         Route::get('/edit-category', [AdminController::class, 'editcategory']);

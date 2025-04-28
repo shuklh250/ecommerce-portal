@@ -7,10 +7,22 @@
 @section('content')
     <div class="container-fluid bg-light p-5">
         <h1 class="text-center text-secondary"><i class="fa-solid fa-user"></i> User Login</h1>
+        <div class="bg-light p-5 mx-auto col-md-6">
+            @if (session('success'))
+                <div class="text-center" style="background-color: #d4edda; color: #155724; padding: 10px; border-radius: 5px;">
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if (session('error'))
+                <div class="text-center" style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px;">
+                    {{ session('error') }}
+                </div>
+            @endif
+        </div>
     </div>
+    <div class="container my-5">
 
-    <section>
-        <div class="container my-5">
+        <section>
             <div class="row">
                 <div class="col-lg-10">
                     <div class="row">
@@ -46,7 +58,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+    </div>
     </section>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
@@ -55,15 +67,19 @@
                 e.preventDefault();
                 let formdata = $(this).serialize();
                 $.ajax({
-                    url: '{{route("user.verifylogin")  }}',
+                    url: '{{ route("user.verifylogin") }}',
                     method: 'POST',
                     data: formdata,
-
                     success: function (response) {
-                        alert("Login successfully");
-                    }, error: function (xhr) {
+                        // console.log(response);
+                        if (response.status === 'success') {
+                            window.location.href = response.redirect_url;
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function (xhr) {
                         if (xhr.status === 422) {
-
                             let errors = xhr.responseJSON.errors;
                             console.log(errors);
                         } else {
@@ -71,7 +87,6 @@
                         }
                     },
                 });
-
             });
         });
     </script>

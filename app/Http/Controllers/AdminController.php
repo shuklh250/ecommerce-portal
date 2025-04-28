@@ -4,15 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Hash;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendOTP;
 use Carbon\Carbon;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
+
 
 
 
@@ -24,38 +22,91 @@ class AdminController extends Controller
     }
     // login veryfiry in database
 
-    public function userlogin(Request $request)
-    {
+    // public function userlogin(Request $request)
+    // {
+    //     $validate =  $request->validate([
+    //         'email' => 'required|email',
+    //         'password' => 'required'
+    //     ]);
 
-        $validate =  $request->validate([
+    //     $user = User::where('email', $request->email)->first();
+
+    //     if (!$user) {
+    //         return back()->with('Error', 'Invalid Email');
+    //     } elseif ($user->role !== 'admin') {
+    //         return back()->with('Error', 'Access denied. Admins only.');
+    //     } elseif ($user->isEmailverify != 1) {
+    //         return redirect()->route('show.emailreverify')->with('Error', 'Please verify your email before logging in.');
+    //     } else {
+    //         if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
+    //             Session::put('admin_email', $request->email);
+
+    //             // Generate new session token
+    //             $token = Str::random(60);
+    //             $user->session_token = $token;
+    //             $user->save();
+
+    //             session(['session_token' => $token]);
+
+    //             return redirect()->route('dashboard');
+    //         } else {
+    //             return back()->with('Error', 'Invalid Password');
+    //         }
+    //     }
+    // }
+
+    public function adminlogin(Request $request)
+    {
+        // Validate the incoming request data
+        $validate = $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
 
-        $user =  User::where('email', $request->email)->first();
+        // Find the user by email
+        $user = User::where('email', $request->email)->first();
+
+        // If user not found
         if (!$user) {
             return back()->with('Error', 'Invalid Email');
-        } elseif ($user->role !== 'admin') {
+        }
+
+        // If the user is not admin, deny access
+        if ($user->role !== 'admin') {
             return back()->with('Error', 'Access denied. Admins only.');
-        } elseif ($user->isEmailverify != 1) {
+        }
+
+        // If the email is not verified
+        if ($user->isEmailverify != 1) {
             return redirect()->route('show.emailreverify')->with('Error', 'Please verify your email before logging in.');
-        } else {
-            if (Auth::attempt($validate)) {
+        }
+
+        // Attempt login with the corresponding guard
+        if ($user->role == 'admin') {
+            // Use the 'admin' guard for admin login
+            if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
+                // Store session email
                 Session::put('admin_email', $request->email);
 
-                // generate new session token
-                $token = Str::random(60);
-                $user->session_token = $token;
-                $user->save();
+                // Generate new session token
+                // $token = Str::random(60);
+                // $user->session_token = $token;
+                // $user->save();
 
-                session(['session_token' => $token]);
+                // session(['session_token' => $token]);
 
                 return redirect()->route('dashboard');
             } else {
                 return back()->with('Error', 'Invalid Password');
             }
         }
+
+        // If the role is not admin, deny access
+        return back()->with('Error', 'Access denied. Admins only.');
     }
+
+
+
     // signup function 
     public function showRegistrationForm()
     {
@@ -97,6 +148,7 @@ class AdminController extends Controller
 
     public function verifyOTP(Request $request)
     {
+
         // Validate OTP entered by user
         $request->validate([
             'email' => 'required|email',
@@ -134,14 +186,19 @@ class AdminController extends Controller
 
     public function logout(Request $request)
     {
-
+        // Forget only admin specific session variables
         Session::forget('admin_email');
-        Auth::logout();
-        $request->session()->invalidate();
+        Session::forget('session_token');
+
+        // Logout admin guard
+        Auth::guard('admin')->logout();
+
+        // Regenerate only CSRF token (optional but good)
         $request->session()->regenerateToken();
 
         return redirect()->route('login')->with('success', 'You have logged out successfully!');
     }
+
     // resend otp 
 
     public function resendOtp(Request $request)
@@ -168,11 +225,7 @@ class AdminController extends Controller
         return view('admin/index');
     }
 
-    public function addcategory()
-    {
-        return view('admin/add-category');
-    }
-
+   
     public function viewcategory()
     {
         return view('admin/view-category');
