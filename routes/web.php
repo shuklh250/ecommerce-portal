@@ -146,6 +146,15 @@ Route::prefix('admin')->group(function () {
         Route::post('/insert-category', [CategoryController::class, 'insertcategory'])->name('insert.category');
         Route::get('/fetch-category', [CategoryController::class, 'fetchcategory'])->name('fecth.category');
         Route::get('/view-category', [AdminController::class, 'viewcategory']);
+        Route::post('/update-category-status', [CategoryController::class, 'categorystatus'])->name('update.category.status');
+        Route::post('/delete-category', [CategoryController::class, 'deletecategory'])->name('delete.category');
+
+        // sub category route 
+        Route::get('/subcategory-show', [SubcategoryController::class, 'showSubcategory'])->name('subcategory.showSubcategory');
+        Route::post('/subcategory-store', [SubcategoryController::class, 'addSubcategory'])->name('subcategory.store');
+        Route::get('/subcategory/fetch', [SubcategoryController::class, 'fetchsubcategory'])->name('subcategory.fetch');
+        Route::post('/subcategory-changestatus', [SubcategoryController::class, 'changestatus'])->name('subcategory.changestatus');
+        Route::post('/delete-subcategory', [SubcategoryController::class, 'deletesubcategory'])->name('delete.subcategory');
 
         Route::get('/edit-category', [AdminController::class, 'editcategory']);
 

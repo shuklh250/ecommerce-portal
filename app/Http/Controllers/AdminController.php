@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendOTP;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 
 
@@ -89,11 +90,11 @@ class AdminController extends Controller
                 Session::put('admin_email', $request->email);
 
                 // Generate new session token
-                // $token = Str::random(60);
-                // $user->session_token = $token;
-                // $user->save();
+                $token = Str::random(60);
+                $user->session_token = $token;
+                $user->save();
 
-                // session(['session_token' => $token]);
+                session(['session_token' => $token]);
 
                 return redirect()->route('dashboard');
             } else {
@@ -225,7 +226,7 @@ class AdminController extends Controller
         return view('admin/index');
     }
 
-   
+
     public function viewcategory()
     {
         return view('admin/view-category');

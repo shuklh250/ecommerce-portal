@@ -19,4 +19,11 @@ class Category extends Model
     {
         return $this->status == 1 ? 'Active' : 'Inactive';
     }
+
+    // app/Models/Category.php
+
+    public function subcategories()
+    {
+        return  $this->hasMany(Subcategory::class, 'category_id');
+    }
 }

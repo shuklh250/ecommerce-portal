@@ -31,7 +31,44 @@ class CategoryController extends Controller
     {
 
         $category = Category::all();
+
+        // dd($category);
         return response()->json(['status' => 'success', 'categories' => $category]);
+    }
+
+    public function categorystatus(Request $request)
+    {
+
+        // dd($request);
+        $id = $request->id;
+
+        $category = Category::find($id);
+        if ($category) {
+            $category->status = $request->status;
+            $category->save();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Category update successfully'
+            ]);
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Category not found'
+
+            ]);
+        }
+    }
+
+    public function deletecategory(Request $request)
+    {
+
+        $category = Category::find($request->id);
+        if (!$category) {
+            return response()->json(['status' => 'error', 'message' => 'Category not found']);
+        }
+        $category->delete();
+
+        return response()->json(['status' => 'success', 'message' => 'Category deleted successfully']);
     }
 
     public function detail($slug)

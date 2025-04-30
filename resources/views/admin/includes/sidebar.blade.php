@@ -20,6 +20,17 @@
 
                         </ul>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <div class="sb-nav-link-icon"><i class="fa-brands fa-shopify"></i></div> Manage SubCategory
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{url('admin/subcategory-show')}}">Add</a></li>
+                            <li><a class="dropdown-item" href="{{url('admin/view-category')}}">View</a></li>
+
+                        </ul>
+                    </li>
                     <a class="nav-link" href="{{url('admin/users')}}">
                         <div class="sb-nav-link-icon"><i class="fa-solid fa-users"></i></div>
                         Manage Users

@@ -91,19 +91,6 @@
                                 </thead>
                                 <tbody id="categoryBody">
                                     <!-- Dummy Data -->
-
-
-
-
-                                    {{-- <tr>
-                                        <td>4</td>
-                                        <td>Furniture</td>
-                                        <td>Inactive</td>
-                                        <td>
-                                            <button class="btn btn-info btn-sm">Hide Category</button>
-                                            <button class="btn btn-danger btn-sm">Delete</button>
-                                        </td>
-                                    </tr> --}}
                                 </tbody>
                             </table>
                         </div>
@@ -116,6 +103,8 @@
     <script>
 
         $(document).ready(function () {
+            fetchCategories();
+
             $('#categoryForm').submit(function (e) {
                 e.preventDefault();
                 $('#message').html('');
@@ -130,6 +119,7 @@
                             $('#categoryForm')[0].reset();
 
                         }
+                        fetchCategories();
                     },
                     error: function (xhr) {
                         if (xhr.status == 422) {
@@ -145,7 +135,7 @@
             });
         });
         // Function to fetch categories
-        function fetchcategorys() {
+        function fetchCategories() {
             $.ajax({
                 url: "{{ route('fecth.category') }}", // Correct route name here
                 type: 'GET',
@@ -164,7 +154,7 @@
                         <td>${category.status == 1 ? 'Show' : 'Hide'}</td>
                         <td>
                             <button class="btn ${buttonClass} btn-sm" onclick="toggleCategoryStatus(${category.id}, ${category.status})">${buttonText}</button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteCategory(${category.id})">Delete</button>
+                            <button class="btn btn-danger btn-sm" onclick="toggledeleteCategory(${category.id})">Delete</button>
                         </td>
                     </tr>`;
                         });
@@ -173,5 +163,54 @@
                 }
             });
         }
+        window.toggleCategoryStatus = function (id, currentStatus) {
+            let newStatus = currentStatus == 1 ? 0 : 1;
+            let actionText = newStatus == 1 ? 'Show' : 'Hide';
 
+            if (confirm('Are you sure you want to ' + actionText + ' this category?')) {
+                $.ajax({
+                    url: "{{ route('update.category.status') }}", // Route name use karo
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        id: id,                    // id yaha bhej rahe hain
+                        status: newStatus         // status bhi bhej rahe hain
+                    },
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            fetchCategories();
+                        } else {
+                            alert('Something went wrong');
+                        }
+                    },
+                    error: function () {
+                        alert('Error updating category status');
+                    }
+                });
+            }
+        };
+
+        window.toggledeleteCategory = function (id) {
+
+            if (confirm('Are you sure want to delete this category')) {
+                $.ajax({
+                    url: "{{ route('delete.category') }}",
+                    type: 'POST',
+                    data: {
+                        _tokne: '{{ csrf_token() }}',
+                        id: id
+                    },
+                    success: function (response) {
+                        if (response.status === 'success') {
+                            fetchCategories();
+                        } else {
+                            alert("Something went wrong");
+                        }
+                    },
+                    error: function () {
+                        alert('Error in delete category');
+                    }
+                });
+            }
+        };
     </script>

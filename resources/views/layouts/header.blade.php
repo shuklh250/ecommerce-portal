@@ -82,7 +82,7 @@
     <div class="container">
 
       <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-        <ul class="nav">
+        {{-- <ul class="nav">
           <!-- <li class="nav-item">
           <a class="nav-link active text-dark" href="{{url('category/electronics')}}">Mobile</a>
         </li> -->
@@ -158,7 +158,36 @@
           <a class="nav-link active text-dark" href="{{url('category/electronics/tv')}}">Applinces</a>
         </li> -->
 
+        </ul> --}}
+        <ul class="nav">
+          @foreach ($categories as $category)
+            <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-dark" href="{{ url('category/' . $category->category_name) }}"
+              role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {{ $category->category_name }}
+            </a>
+
+            @php
+        // Filter only active subcategories (status = 1)
+        $activeSubcategories = $category->subcategories->where('status', 1);
+        @endphp
+
+            @if ($activeSubcategories->count())
+        <ul class="dropdown-menu">
+          @foreach ($activeSubcategories as $subcategory)
+        <li>
+        <a class="dropdown-item"
+        href="{{ url('category/' . $category->category_name . '/' . $subcategory->name) }}">
+        {{ $subcategory->name }}
+        </a>
+        </li>
+      @endforeach
         </ul>
+      @endif
+            </li>
+      @endforeach
+        </ul>
+
       </div>
     </div>
   </nav>
