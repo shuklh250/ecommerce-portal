@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('session_token')->nullable();
             $table->string('role')->default('user');
             $table->string('otp')->nullable();
+            $table->tinyInteger('status')->default(1);
+            $table->string('amount')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

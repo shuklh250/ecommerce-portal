@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\AdminSessionTokenCheck;
 use App\Http\Middleware\SessionGuardMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\CheckAdmin;
@@ -136,7 +137,7 @@ Route::prefix('admin')->group(function () {
 
     //  ++++++++ Routes with middleware ++++++++++++
 
-    Route::middleware([CheckAdmin::class, CheckUserSession::class, SessionGuardMiddleware::class])->group(function () {
+    Route::middleware([CheckAdmin::class, CheckUserSession::class, SessionGuardMiddleware::class, AdminSessionTokenCheck::class])->group(function () {
 
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
 
@@ -159,7 +160,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/edit-category', [AdminController::class, 'editcategory']);
 
         Route::get('/users', [AdminController::class, 'users']);
-
+        Route::post('/users-status', [AdminController::class, 'block_unblock_user'])->name('users.status');
         Route::get('/vendors', [AdminController::class, 'vendors']);
 
         Route::get('/orders', [AdminController::class, 'orders']);

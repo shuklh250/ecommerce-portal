@@ -56,6 +56,9 @@ class UserController extends Controller
 
     public function login()
     {
+        if (Auth::guard('user')->check()) {
+            return redirect()->route('home');
+        }
         return view('login');
     }
     public function verifylogin(Request $request)
@@ -66,7 +69,9 @@ class UserController extends Controller
                 'message' => 'You are already logged in.'
             ]);
         }
-
+        if (Auth::guard('web')->check()) {
+            // apna user dashboard route daalna
+        }
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',

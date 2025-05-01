@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\SendOTP;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
 
 
 
@@ -59,7 +61,7 @@ class AdminController extends Controller
     public function adminlogin(Request $request)
     {
         // Validate the incoming request data
-        $validate = $request->validate([
+        $request->validate([
             'email' => 'required|email',
             'password' => 'required'
         ]);
@@ -72,39 +74,36 @@ class AdminController extends Controller
             return back()->with('Error', 'Invalid Email');
         }
 
-        // If the user is not admin, deny access
+        // Ensure the user is an admin
         if ($user->role !== 'admin') {
             return back()->with('Error', 'Access denied. Admins only.');
         }
 
-        // If the email is not verified
+        // Ensure email is verified
         if ($user->isEmailverify != 1) {
             return redirect()->route('show.emailreverify')->with('Error', 'Please verify your email before logging in.');
         }
 
-        // Attempt login with the corresponding guard
-        if ($user->role == 'admin') {
-            // Use the 'admin' guard for admin login
-            if (Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
-                // Store session email
-                Session::put('admin_email', $request->email);
+        // Attempt login using the 'admin' guard
+        if (Auth::guard('admin')->attempt([
+            'email' => $request->email,
+            'password' => $request->password
+        ])) {
+            // Generate and store a unique session token for this admin session
+            $token = Str::random(60);
+            $user->session_token = $token;
+            $user->save();
 
-                // Generate new session token
-                $token = Str::random(60);
-                $user->session_token = $token;
-                $user->save();
+            // Store admin-specific session data
+            Session::put('admin_email', $request->email);
+            Session::put('admin_session_token', $token);
 
-                session(['session_token' => $token]);
-
-                return redirect()->route('dashboard');
-            } else {
-                return back()->with('Error', 'Invalid Password');
-            }
+            return redirect()->route('dashboard');
+        } else {
+            return back()->with('Error', 'Invalid Password');
         }
-
-        // If the role is not admin, deny access
-        return back()->with('Error', 'Access denied. Admins only.');
     }
+
 
 
 
@@ -197,7 +196,7 @@ class AdminController extends Controller
         // Regenerate only CSRF token (optional but good)
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')->with('success', 'You have logged out successfully!');
+        return redirect()->route('home')->with('success', 'You have logged out successfully!');
     }
 
     // resend otp 
@@ -221,6 +220,27 @@ class AdminController extends Controller
         Mail::to($request->email)->send(new SendOTP($otp, $name));
         return redirect()->route('verifyOtpForm', ['user_email' => $request->email])->with('success', 'OTP resent to your email.');
     }
+
+    public function block_unblock_user(Request $request)
+    {
+        $id = $request->id;
+
+        $affected = DB::table('users')->where('id', $id)->update([
+            'status' => $request->status,
+        ]);
+
+        if ($affected > 0) {
+            return response()->json([
+                'success' => true,
+                'message' => 'User update successfully.'
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'No change made or user not found'
+            ], 200);
+        }
+    }
     public function index()
     {
         return view('admin/index');
@@ -239,7 +259,9 @@ class AdminController extends Controller
 
     public function users()
     {
-        return view('admin/users');
+        $users = User::whereIn('role', ['user', 'vendor'])->get();
+
+        return view('admin/users', compact('users'));
     }
 
     public function vendors()
