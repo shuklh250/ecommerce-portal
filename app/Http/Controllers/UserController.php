@@ -79,6 +79,12 @@ class UserController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
+        if ($user->status != 1) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You blocked by admin'
+            ]);
+        }
         if (!$user) {
             return response()->json([
                 'status' => 'error',

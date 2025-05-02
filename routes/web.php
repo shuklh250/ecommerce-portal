@@ -39,40 +39,23 @@ Route::post('/payment', [PaymentController::class, 'payment'])->name('payment');
 Route::post('/verify', [App\Http\Controllers\PaymentController::class, 'verify'])->name('payment.verify');
 
 
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/showverifyotp/{user_email}', [UserController::class, 'showverifyotp'])->name('user.show.verifyotp');
 Route::get('/category/{slug}', [CategoryController::class, 'detail']);
-
 Route::get('/category/electronics/{slug}', [SubcategoryController::class, 'detail']);
-
 Route::get('/category/electronics/tv/{slug}', [ProductdetailController::class, 'detail']);
-
 Route::get('/cart-list/{slug}', [CartController::class, 'list']);
-
 Route::get('/checkout/{slug}', [CheckoutController::class, 'checkout']);
-
 Route::get('register', [UserController::class, 'showregister']);
-
 Route::post('register', [UserController::class, 'register'])->name('user.register');
-
 Route::get('register1', [UserController::class, 'register1']);
-
 Route::get('login', [UserController::class, 'login'])->name('login');
-
 Route::get('/logout-user', [UserController::class, 'logout']);
-
-
-
 Route::get('login1', [UserController::class, 'login1']);
 
 // User Dashboard Routes Start Here:
 
-// Route::middleware([CheckAdmin::class, CheckUserSession::class])->group(
-//     function () {
-
 Route::post('login', [UserController::class, 'verifylogin'])->name('user.verifylogin');
-
 Route::middleware([CheckUserType::class])->group(function () {
 
     // This route will be available only if user is logged in and has role 'user'
@@ -83,33 +66,20 @@ Route::middleware([CheckUserType::class])->group(function () {
     Route::get('user/settings/', [UserController::class, 'settings'])->name('user.setting');
 });
 
-
-
-
 // Vendor Dashboard Route Srart Here:
 
 Route::prefix('vendor')->group(function () {
 
     Route::get('/signup', [VendorController::class, 'signup']);
-
     Route::get('/login', [VendorController::class, 'login'])->name('vendor.login');
-
     Route::get('/forget', [VendorController::class, 'forget']);
-
     Route::get('/dashboard', [VendorController::class, 'index']);
-
     Route::get('/add-product', [VendorController::class, 'addproduct']);
-
     Route::get('/view-product', [VendorController::class, 'viewproduct']);
-
     Route::get('/edit-product', [VendorController::class, 'editproduct']);
-
     Route::get('/orders', [VendorController::class, 'orders']);
-
     Route::get('/order-detail', [VendorController::class, 'orderdetail']);
-
     Route::get('/users', [VendorController::class, 'users']);
-
     Route::get('/profile', [VendorController::class, 'profile']);
 });
 
@@ -118,31 +88,20 @@ Route::prefix('vendor')->group(function () {
 Route::prefix('admin')->group(function () {
 
     // ++++++++++++ Routes without middleware +++++++++++++++
-
     Route::post('verify-otp', [AdminController::class, 'verifyOTP'])->name('verifyotp');
-
     Route::get('/signup', [AdminController::class, 'showRegistrationForm'])->name('signup');
-
     Route::post('/register', [AdminController::class, 'register'])->name('register');
-
     Route::get('/login', [AdminController::class, 'login'])->name('admin.login');
-
     Route::post('/login', [AdminController::class, 'adminlogin'])->name('userlogin');
-
-    // Route::post('/logout', [AdminController::class, 'logout'])->name('logout');
-
-    // Route::match(['get', 'post'], '/logout', [AdminController::class, 'logout'])->name('logout');
-
     Route::match(['get', 'post'], '/logout', [AdminController::class, 'logout'])->name('logout');
 
     //  ++++++++ Routes with middleware ++++++++++++
-
     Route::middleware([CheckAdmin::class, CheckUserSession::class, SessionGuardMiddleware::class, AdminSessionTokenCheck::class])->group(function () {
 
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
-
         Route::get('/order-detail', [AdminController::class, 'orderdetail']);
 
+        // category route
         Route::get('/add-category', [CategoryController::class, 'addcategory'])->name('add.category');
         Route::post('/insert-category', [CategoryController::class, 'insertcategory'])->name('insert.category');
         Route::get('/fetch-category', [CategoryController::class, 'fetchcategory'])->name('fecth.category');
@@ -158,10 +117,15 @@ Route::prefix('admin')->group(function () {
         Route::post('/delete-subcategory', [SubcategoryController::class, 'deletesubcategory'])->name('delete.subcategory');
 
         Route::get('/edit-category', [AdminController::class, 'editcategory']);
-
         Route::get('/users', [AdminController::class, 'users']);
         Route::post('/users-status', [AdminController::class, 'block_unblock_user'])->name('users.status');
         Route::get('/vendors', [AdminController::class, 'vendors']);
+
+        // product route 
+        Route::get('/add-product', [ProductdetailController::class, 'addproduct'])->name('add.product');
+        Route::get('/view-product', [ProductdetailController::class, 'viewproduct'])->name('view.product');
+        Route::get('/get-subcategories', [ProductdetailController::class, 'getSubcategories'])->name('get.subcategory');
+
 
         Route::get('/orders', [AdminController::class, 'orders']);
     });

@@ -60,6 +60,7 @@
             </div>
     </div>
     </section>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function () {
@@ -73,17 +74,40 @@
                     success: function (response) {
                         // console.log(response);
                         if (response.status === 'success') {
-                            window.location.href = response.redirect_url;
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Login successful',
+                                text: response.message,
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(() => {
+                                window.location.href = response.redirect_url;
+                            });
                         } else {
-                            alert(response.message);
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Login failed',
+                                text: response.message
+                            });
                         }
                     },
                     error: function (xhr) {
                         if (xhr.status === 422) {
                             let errors = xhr.responseJSON.errors;
-                            console.log(errors);
+                            let errorMessages = Object.values(errors).map(err => err[0]).join('<br>');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Validation Error',
+                                html: errorMessage
+                            })
                         } else {
-                            alert('Something went wrong');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Something went wrong. Please try again latter.'
+                            });
                         }
                     },
                 });

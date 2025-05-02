@@ -220,7 +220,6 @@ class AdminController extends Controller
         Mail::to($request->email)->send(new SendOTP($otp, $name));
         return redirect()->route('verifyOtpForm', ['user_email' => $request->email])->with('success', 'OTP resent to your email.');
     }
-
     public function block_unblock_user(Request $request)
     {
         $id = $request->id;
@@ -238,7 +237,7 @@ class AdminController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'No change made or user not found'
-            ], 200);
+            ], 200  );
         }
     }
     public function index()
