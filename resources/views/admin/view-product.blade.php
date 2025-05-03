@@ -27,14 +27,26 @@
                                                 <h5>Price</h5>
                                             </th>
                                             <th scope="col">
+                                                <h5>Discount</h5>
+                                            </th>
+                                            <th scope="col">
                                                 <h5>Category</h5>
                                             </th>
+                                            <th scope="col">
+                                                <h5>Subcategory</h5>
+                                            </th>
+
                                             <th scope="col">
                                                 <h5>Stock</h5>
                                             </th>
                                             <th scope="col">
+                                                <h5>Short Description</h5>
+                                            </th>
+
+                                            <th scope="col">
                                                 <h5>Description</h5>
                                             </th>
+
                                             <th scope="col">
                                                 <h5>Action</h5>
                                             </th>
@@ -55,8 +67,11 @@
                                                 </div>
                                             </th>
                                             <td>₹ 599.00</td>
+                                            <td>20%</td>
                                             <td>Electronics</td>
+                                            <td>Cpu</td>
                                             <td>25</td>
+                                            <td>Short description</td>
                                             <td>Reference site about Lorem Ipsum</td>
                                             <td>
                                                 <a href="{{url('vendor/edit-product')}}" class="btn btn-primary btn-sm"><i
@@ -126,8 +141,5 @@
                 </div>
             </div>
         </main>
-
-
-
 
 @endsection

@@ -125,7 +125,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/add-product', [ProductdetailController::class, 'addproduct'])->name('add.product');
         Route::get('/view-product', [ProductdetailController::class, 'viewproduct'])->name('view.product');
         Route::get('/get-subcategories', [ProductdetailController::class, 'getSubcategories'])->name('get.subcategory');
-
+        Route::post('/add-product', [ProductdetailController::class, 'insertproduct'])->name('add.insertproduct');
 
         Route::get('/orders', [AdminController::class, 'orders']);
     });
