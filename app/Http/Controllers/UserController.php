@@ -59,7 +59,7 @@ class UserController extends Controller
         if (Auth::guard('user')->check()) {
             return redirect()->route('home');
         }
-        return view('lo gin');
+        return view('login');
     }
     public function verifylogin(Request $request)
     {
@@ -120,9 +120,6 @@ class UserController extends Controller
             ]);
         }
     }
-
-
-
 
 
     public function login1()

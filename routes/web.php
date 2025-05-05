@@ -126,6 +126,8 @@ Route::prefix('admin')->group(function () {
         Route::get('/view-product', [ProductdetailController::class, 'viewproduct'])->name('view.product');
         Route::get('/get-subcategories', [ProductdetailController::class, 'getSubcategories'])->name('get.subcategory');
         Route::post('/add-product', [ProductdetailController::class, 'insertproduct'])->name('add.insertproduct');
+        Route::put('/update-product/{id}', [ProductdetailController::class, 'updateproduct']);
+        Route::delete('/delete-product', [ProductdetailController::class, 'deleteproduct'])->name('admin.product.delete');
 
         Route::get('/orders', [AdminController::class, 'orders']);
     });
