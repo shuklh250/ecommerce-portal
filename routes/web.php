@@ -128,6 +128,8 @@ Route::prefix('admin')->group(function () {
         Route::post('/add-product', [ProductdetailController::class, 'insertproduct'])->name('add.insertproduct');
         Route::put('/update-product/{id}', [ProductdetailController::class, 'updateproduct']);
         Route::delete('/delete-product', [ProductdetailController::class, 'deleteproduct'])->name('admin.product.delete');
+        Route::post('/status-product', [ProductdetailController::class, 'hide_and_show_product'])->name('admin.product.toggleStatus');
+        Route::post('/product/toggle-like', [ProductdetailController::class, 'toggleLike'])->name('product.toggle-like');
 
         Route::get('/orders', [AdminController::class, 'orders']);
     });

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Container\Attributes\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -30,5 +31,23 @@ class Product extends Model
     public function subcategory()
     {
         return $this->belongsTo(SubCategory::class, 'subcategory_id');
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(ProductLike::class);
+    }
+    public function isLikedByUser()
+    {
+        $user = auth('user')->user(); // ya use guard if needed
+
+        if (!$user) {
+            return false;
+        }
+
+        return $this->likes()
+            ->where('user_id', $user->id)
+            ->where('status', 1)
+            ->exists();
     }
 }

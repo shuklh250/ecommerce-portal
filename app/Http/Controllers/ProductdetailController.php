@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\SubCategory;
 use App\Models\Product;
+use App\Models\ProductLike;
 use Illuminate\Http\Request;
 
 class ProductdetailController extends Controller
@@ -107,19 +108,45 @@ class ProductdetailController extends Controller
 
     public function deleteproduct(Request $request)
     {
-
         $id = $request->id;
-
         $product = Product::findOrFail($id);
 
         if ($product->image && file_exists(public_path('uploads/products/' . $product->image))) {
             unlink(public_path('uploads/products/' . $product->image));
         }
-
         $product->delete();
-
         return response()->json(['success' => 'Product deleted successfully.']);
     }
+
+    public function hide_and_show_product(Request $request)
+    {
+        $id = $request->id;
+        $product = Product::findOrFail($id);
+
+        Product::where('id', $id)->update([
+            'status' => $request->status
+        ]);
+        return response()->json(['success' => 'Product status updated']);
+    }
+
+    // product liek and dislike
+
+    public function toggleLike(Request $request)
+    {
+
+        // dd($request);
+        $productId = $request->product_id;
+        $status = $request->status;
+
+        $userId = auth('user')->id();
+        $like = ProductLike::updateOrCreate(
+            ['user_id' => $userId, 'product_id' => $productId],
+            ['status' => $status]
+        );
+
+        return response()->json(['success' => true]);
+    }
+
     public function detail($slug)
     {
         return view('product-detail');
