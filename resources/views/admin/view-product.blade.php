@@ -7,8 +7,6 @@
 
             <div id="layoutSidenav_content">
                 <main>
-
-
                     <div class="card p-4 mt-4">
                         <div class="row">
                             <div class="col-xl-12 col-md-12">

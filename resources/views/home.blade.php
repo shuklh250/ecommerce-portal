@@ -66,7 +66,6 @@
                 @foreach ($TopDeals as $TopDeal)
                     <div class="card product-card h-100 position-relative" style="min-width: 250px; flex: 0 0 auto;">
 
-
                         <div class="position-absolute top-0 end-0 m-2">
                             <a href="javascript:void(0);" class="toggle-like-btn" data-id="{{ $TopDeal->id }}"
                                 data-liked="{{ $TopDeal->isLikedByUser() ? '1' : '0' }}">
@@ -76,6 +75,7 @@
                                     <i class="far fa-heart text-muted"></i>
                                 @endif
                             </a>
+
 
                         </div>
 
@@ -353,12 +353,6 @@
             });
         });
     </script>
-
-
-
-
-
-
     <script>
         const container = document.getElementById('topDealsContainer');
 

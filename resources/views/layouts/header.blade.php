@@ -24,7 +24,6 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- jQuery (Toastr se pehle hona chahiye) -->
 
-
   <!-- Toastr CSS -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
@@ -120,102 +119,17 @@
       <a href="{{ route('profile') }}" class="btn theme-purple-btn btn-sm ms-1 rounded-pill px-3 py-2">
         <i class="fa-solid fa-user-circle"></i> Profile
       </a>
-
     @endif
-
-
-
-
-
-
 
       </div>
     </div>
   </nav>
-
   <!-- Category Nav -->
 
   <nav class="navbar navbar-expand-lg  shadow p-3 bg-body-tertiary rounded">
     <div class="container">
 
       <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
-        {{-- <ul class="nav">
-          <!-- <li class="nav-item">
-          <a class="nav-link active text-dark" href="{{url('category/electronics')}}">Mobile</a>
-        </li> -->
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-dark" href="{{url('category/electronics')}}" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              Mobile
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="{{url('category/electronics/tv')}}">Oppo</a></li>
-              <li><a class="dropdown-item" href="#">Vivo</a></li>
-              <li><a class="dropdown-item" href="#">Samsung</a></li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-dark" href="{{url('category/electronics')}}" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              Fashion
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="{{url('category/electronics/tv')}}">Shoes</a></li>
-              <li><a class="dropdown-item" href="#">Bags</a></li>
-              <li><a class="dropdown-item" href="#">Clothes</a></li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-dark" href="{{url('category/electronics')}}" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              Electronics
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="{{url('category/electronics/tv')}}">TV</a></li>
-              <li><a class="dropdown-item" href="#">Washing Machine</a></li>
-              <li><a class="dropdown-item" href="#">Watches</a></li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-dark" href="{{url('category/electronics')}}" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              Furniture
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="{{url('category/electronics/tv')}}">Bed</a></li>
-              <li><a class="dropdown-item" href="#">Sofa</a></li>
-              <li><a class="dropdown-item" href="#">Table</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-dark" href="{{url('category/electronics')}}" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              Grocerry
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="{{url('category/electronics/tv')}}">Atta</a></li>
-              <li><a class="dropdown-item" href="#">Oil</a></li>
-              <li><a class="dropdown-item" href="#">Surf</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-dark" href="{{url('category/electronics')}}" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              Applinces
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="{{url('category/electronics/tv')}}">TV</a></li>
-              <li><a class="dropdown-item" href="#">Washing Machine</a></li>
-              <li><a class="dropdown-item" href="#">Refrigerators</a></li>
-            </ul>
-          </li>
-          <!-- <li class="nav-item">
-          <a class="nav-link active text-dark" href="{{url('category/electronics/tv')}}">Applinces</a>
-        </li> -->
-
-        </ul> --}}
         <ul class="nav">
           @foreach ($categories as $category)
           <li class="nav-item dropdown">
