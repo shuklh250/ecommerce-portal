@@ -27,7 +27,7 @@ class ProductdetailController extends Controller
             'stock' => 'required|numeric',
             'shortdescription' => 'required|string',
             'description' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'required|image|max:2048',
         ]);
         $imageName = '';
         if ($request->hasFile('image')) {
@@ -61,7 +61,7 @@ class ProductdetailController extends Controller
             'subcategory_id' => 'required',
             'stock_quantity' => 'required|numeric',
             'short_description' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'image' => 'nullable|image|max:2048',
         ]);
 
         $data = $request->only([
@@ -139,6 +139,7 @@ class ProductdetailController extends Controller
         $status = $request->status;
 
         $userId = auth('user')->id();
+
         $like = ProductLike::updateOrCreate(
             ['user_id' => $userId, 'product_id' => $productId],
             ['status' => $status]

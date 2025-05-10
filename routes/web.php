@@ -42,7 +42,7 @@ Route::post('/verify', [App\Http\Controllers\PaymentController::class, 'verify']
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/showverifyotp/{user_email}', [UserController::class, 'showverifyotp'])->name('user.show.verifyotp');
 Route::get('/category/{slug}', [CategoryController::class, 'detail']);
-Route::get('/category/electronics/{slug}', [SubcategoryController::class, 'detail']);
+Route::get('/category/{categoryid}/{subcategoryid}/{slug?}', [SubcategoryController::class, 'detail']);
 Route::get('/category/electronics/tv/{slug}', [ProductdetailController::class, 'detail']);
 Route::get('/cart-list/{slug}', [CartController::class, 'list']);
 Route::get('/checkout/{slug}', [CheckoutController::class, 'checkout']);
@@ -50,7 +50,6 @@ Route::get('register', [UserController::class, 'showregister']);
 Route::post('register', [UserController::class, 'register'])->name('user.register');
 Route::get('register1', [UserController::class, 'register1']);
 Route::get('login', [UserController::class, 'login'])->name('login');
-Route::get('/logout-user', [UserController::class, 'logout']);
 Route::get('login1', [UserController::class, 'login1']);
 
 // User Dashboard Routes Start Here:
@@ -64,6 +63,8 @@ Route::middleware([CheckUserType::class])->group(function () {
     Route::get('user/order-history/', [UserController::class, 'history']);
     Route::get('user/detail/', [UserController::class, 'detail']);
     Route::get('user/settings/', [UserController::class, 'settings'])->name('user.setting');
+    Route::post('/product/toggle-like', [ProductdetailController::class, 'toggleLike'])->name('product.toggle-like');
+    Route::get('/logout-user', [UserController::class, 'logout']);
 });
 
 // Vendor Dashboard Route Srart Here:
@@ -129,7 +130,7 @@ Route::prefix('admin')->group(function () {
         Route::put('/update-product/{id}', [ProductdetailController::class, 'updateproduct']);
         Route::delete('/delete-product', [ProductdetailController::class, 'deleteproduct'])->name('admin.product.delete');
         Route::post('/status-product', [ProductdetailController::class, 'hide_and_show_product'])->name('admin.product.toggleStatus');
-        Route::post('/product/toggle-like', [ProductdetailController::class, 'toggleLike'])->name('product.toggle-like');
+
 
         Route::get('/orders', [AdminController::class, 'orders']);
     });

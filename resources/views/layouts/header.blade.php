@@ -5,6 +5,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+
   @stack('title')
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
@@ -16,19 +18,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
 
   <link href="{{asset('assets/css/style.css')}}" rel="stylesheet">
-  <!-- Toastr CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-  <!-- Toastr JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- jQuery (Always first) -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!-- jQuery (Toastr se pehle hona chahiye) -->
 
   <!-- Toastr CSS -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 
-  <!-- Toastr JS -->
+  <!-- Toastr JS (after jQuery) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+  <!-- SweetAlert (optional, if using) -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
@@ -133,8 +133,8 @@
         <ul class="nav">
           @foreach ($categories as $category)
           <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle text-dark" href="{{ url('category/' . $category->category_name) }}"
-            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle text-dark" href="{{ url('category/' . $category->id) }}" role="button"
+            data-bs-toggle="dropdown" aria-expanded="false">
             {{ $category->category_name }}
           </a>
 
@@ -147,8 +147,7 @@
           <ul class="dropdown-menu">
           @foreach ($activeSubcategories as $subcategory)
           <li>
-          <a class="dropdown-item"
-          href="{{ url('category/' . $category->category_name . '/' . $subcategory->name) }}">
+          <a class="dropdown-item" href="{{ url('category/' . $category->id . '/' . $subcategory->id) }}">
           {{ $subcategory->name }}
           </a>
           </li>

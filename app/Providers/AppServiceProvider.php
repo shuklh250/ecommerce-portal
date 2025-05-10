@@ -21,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::share('categories', Category::with('subcategories')->where('status', 1)->get());
+        View::share('categories', Category::whereHas('subcategories', function ($query) {
+            $query->whereHas('products'); // subcategory ke andar products hone chahiye
+        })->with(['subcategories' => function ($query) {
+            $query->whereHas('products'); // sirf wahi subcategories jisme products ho
+        }])->where('status', 1)->get());
     }
 }

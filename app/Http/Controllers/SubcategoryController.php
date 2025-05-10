@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SubCategory;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class SubcategoryController extends Controller
@@ -72,8 +73,13 @@ class SubcategoryController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Category deleted successfully']);
     }
 
-    public function detail($slug)
+    public function detail($categoryid, $subcategoryid, $slug = null)
     {
-        return view('subcategory');
+        // dd($subcategoryid);
+        // $product = Product::where('category_id', $categoryid)->where('subcategory_id', $subcategoryid)->where('status', '1')->get();
+        $products = Product::where([['category_id', '=', $categoryid], ['subcategory_id', '=', $subcategoryid], ['status', '=', '1']])->get();
+        // dd($products);
+
+        return view('subcategory', compact('products'));
     }
 }

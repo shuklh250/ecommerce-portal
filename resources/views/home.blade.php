@@ -78,8 +78,6 @@
 
 
                         </div>
-
-
                         <!-- Product image -->
                         <a href="#"><img src="{{ asset('uploads/products/' . $TopDeal->image) }}"
                                 class="card-img-top product-image" alt="{{ $TopDeal->name }}"></a>
@@ -312,30 +310,33 @@
         </div>
     </section>
 
-
     <script>
-        // STEP 1: Toastr Configuration - sabse upar lagao
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
         toastr.options = {
             "positionClass": "toast-bottom-right",
             "timeOut": "500",
             "closeButton": true,
             "progressBar": true
         };
-
         // STEP 2: AJAX Call for Like/Dislike
         $(document).on('click', '.toggle-like-btn', function () {
             let $this = $(this);
             let productId = $this.data('id');
             let isLiked = $this.data('liked');
             let icon = $this.find('i');
-
+           
             $.ajax({
                 url: "{{ route('product.toggle-like') }}",
                 method: "POST",
                 data: {
                     _token: "{{ csrf_token() }}",
                     product_id: productId,
-                    status: isLiked == 1 ? 0 : 1
+                    status: isLiked == 1 ? 0 : 1,
+                  
                 },
                 success: function (res) {
                     if (res.success) {
