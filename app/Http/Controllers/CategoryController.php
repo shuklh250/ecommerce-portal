@@ -31,17 +31,14 @@ class CategoryController extends Controller
     {
 
         $category = Category::all();
-
-        // dd($category);
         return response()->json(['status' => 'success', 'categories' => $category]);
     }
 
     public function categorystatus(Request $request)
     {
 
-        // dd($request);
         $id = $request->id;
-
+        
         $category = Category::find($id);
         if ($category) {
             $category->status = $request->status;
