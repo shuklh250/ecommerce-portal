@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
 use App\Models\Category;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,10 +22,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::share('categories', Category::whereHas('subcategories', function ($query) {
-            $query->whereHas('products'); // subcategory ke andar products hone chahiye
-        })->with(['subcategories' => function ($query) {
-            $query->whereHas('products'); // sirf wahi subcategories jisme products ho
-        }])->where('status', 1)->get());
+        if (Schema::hasTable('categories') && Schema::hasTable('subcategories') && Schema::hasTable('products')) {
+            $categories = Category::whereHas('subcategories', function ($query) {
+                $query->whereHas('products');
+            })->with(['subcategories' => function ($query) {
+                $query->whereHas('products');
+            }])->where('status', 1)->get();
+
+            View::share('categories', $categories);
+        }
     }
 }

@@ -38,7 +38,6 @@ class CategoryController extends Controller
     {
 
         $id = $request->id;
-        
         $category = Category::find($id);
         if ($category) {
             $category->status = $request->status;
