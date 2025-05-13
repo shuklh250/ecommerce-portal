@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Cart;
 use App\Mail\SendOTP;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Auth;
@@ -69,9 +70,7 @@ class UserController extends Controller
                 'message' => 'You are already logged in.'
             ]);
         }
-        if (Auth::guard('web')->check()) {
-            // apna user dashboard route daalna
-        }
+
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -79,12 +78,7 @@ class UserController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if ($user->status != 1) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'You blocked by admin'
-            ]);
-        }
+
         if (!$user) {
             return response()->json([
                 'status' => 'error',
@@ -92,10 +86,17 @@ class UserController extends Controller
             ]);
         }
 
+        if ($user->status != 1) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'You are blocked by admin.'
+            ]);
+        }
+
         if ($user->role !== 'user') {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Access denied. Only registered users can login!'
+                'message' => 'Access denied. Only users can login!'
             ]);
         }
 
@@ -105,9 +106,27 @@ class UserController extends Controller
                 'message' => 'Please verify your email before logging in!'
             ]);
         }
-
         if (Auth::guard('user')->attempt(['email' => $request->email, 'password' => $request->password])) {
             Session::put('user_email', $user->email);
+
+            // ✅ Guest cart session se item uthao aur database me daalo
+            $cartItems = session('cart_items', []); // guest cart session
+
+            foreach ($cartItems as $item) {
+                $exists = Cart::where('user_id', $user->id)
+                    ->where('product_id', $item['product_id'])
+                    ->first();
+
+                if (!$exists) {
+                    Cart::create([
+                        'user_id'    => $user->id,
+                        'product_id' => $item['product_id'],
+                        'quantity'   => $item['quantity'] ?? 1,
+                    ]);
+                }
+            }
+
+            Session::forget('cart_items');
             return response()->json([
                 'status' => 'success',
                 'message' => 'Login successful',

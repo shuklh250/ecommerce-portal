@@ -52,6 +52,12 @@ Route::get('register1', [UserController::class, 'register1']);
 Route::get('login', [UserController::class, 'login'])->name('login');
 Route::get('login1', [UserController::class, 'login1']);
 
+
+Route::post('add-to-cart', [CartController::class, 'add']);
+Route::post('update-cart', [CartController::class, 'update']);
+Route::post('remove-from-cart', [CartController::class, 'remove']);
+
+
 // User Dashboard Routes Start Here:
 
 Route::post('login', [UserController::class, 'verifylogin'])->name('user.verifylogin');

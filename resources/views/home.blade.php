@@ -94,9 +94,21 @@
                                 <span class="fw-bold text-success">₹{{ $TopDeal->price }}</span>
                                 <span class="price-original text-muted text-decoration-line-through">₹699.00</span>
                             </div>
-                            <button class="btn btn-primary btn-sm mt-2 w-100">
-                                <i class="fas fa-shopping-cart"></i> Add to Cart
-                            </button>
+                            <div class="cart-action text-center mt-2 w-100">
+                                @php $cart = session('cart') ?? []; @endphp
+                                @if(isset($cart[$TopDeal->id]))
+                                    <div class="d-flex justify-content-center align-items-center quantity-controls"
+                                        data-id="{{ $TopDeal->id }}">
+                                        <button class="btn btn-sm btn-outline-danger me-2 decrease-qty">−</button>
+                                        <span class="qty-count">{{ $cart[$TopDeal->id]['quantity'] }}</span>
+                                        <button class="btn btn-sm btn-outline-success ms-2 increase-qty">+</button>
+                                    </div>
+                                @else
+                                    <button class="btn btn-primary btn-sm w-100 add-to-cart-btn" data-id="{{ $TopDeal->id }}">
+                                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                                    </button>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 @endforeach
@@ -328,7 +340,7 @@
             let productId = $this.data('id');
             let isLiked = $this.data('liked');
             let icon = $this.find('i');
-           
+
             $.ajax({
                 url: "{{ route('product.toggle-like') }}",
                 method: "POST",
@@ -336,7 +348,7 @@
                     _token: "{{ csrf_token() }}",
                     product_id: productId,
                     status: isLiked == 1 ? 0 : 1,
-                  
+
                 },
                 success: function (res) {
                     if (res.success) {
@@ -364,6 +376,96 @@
         function scrollTopDealsRight() {
             container.scrollBy({ left: 300, behavior: 'smooth' });
         }
-    </script
+    </script>
+
+    {{-- add to cart --}}
+
+    <script>
+        $(document).ready(function () {
+            // Add to Cart
+            $(document).on('click', '.add-to-cart-btn', function () {
+                let productId = $(this).data('id');
+                let $card = $(this).closest('.cart-action');
+
+                $.ajax({
+                    url: "{{ url('add-to-cart') }}",
+                    method: "POST",
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        product_id: productId,
+                        quantity: 1
+                    },
+                    success: function (response) {
+                        $card.html(`
+                                                            <div class="d-flex justify-content-center align-items-center quantity-controls" data-id="${productId}">
+                                                                <button class="btn btn-sm btn-outline-danger me-2 decrease-qty">−</button>
+                                                                <span class="qty-count">1</span>
+                                                                <button class="btn btn-sm btn-outline-success ms-2 increase-qty">+</button>
+                                                            </div>
+                                                        `);
+                        updateCartCount(response.cart_count);
+                    }
+                });
+            });
+
+            // Increase Quantity
+            $(document).on('click', '.increase-qty', function () {
+                let $control = $(this).closest('.quantity-controls');
+                let productId = $control.data('id');
+                let $qtySpan = $control.find('.qty-count');
+                let qty = parseInt($qtySpan.text()) + 1;
+
+                $.post("{{ url('update-cart') }}", {
+                    _token: '{{ csrf_token() }}',
+                    product_id: productId,
+                    quantity: qty
+                }, function (response) {
+                    $qtySpan.text(qty);
+                    updateCartCount(response.cart_count);
+                });
+            });
+
+            // Decrease Quantity
+            $(document).on('click', '.decrease-qty', function () {
+                let $control = $(this).closest('.quantity-controls');
+                let productId = $control.data('id');
+                let $qtySpan = $control.find('.qty-count');
+                let qty = parseInt($qtySpan.text()) - 1;
+
+                if (qty <= 0) {
+                    // Remove from cart and show "Add to Cart"
+                    $.post("{{ url('remove-from-cart') }}", {
+                        _token: '{{ csrf_token() }}',
+                        product_id: productId
+                    }, function (response) {
+                        $control.closest('.cart-action').html(`
+                                                                                <button class="btn btn-primary btn-sm w-100 add-to-cart-btn" data-id="${productId}">
+                                                                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                                                                </button>
+                                                                            `);
+                        updateCartCount(response.cart_count);
+                    });
+                } else {
+                    $.post("{{ url('update-cart') }}", {
+                        _token: '{{ csrf_token() }}',
+                        product_id: productId,
+                        quantity: qty
+                    }, function (response) {
+                        $qtySpan.text(qty);
+                        updateCartCount(response.cart_count);
+                    });
+                }
+            });
+
+            // Update header cart count
+            function updateCartCount(count) {
+                $('#cart-count').text(count).addClass('animate');
+                setTimeout(() => $('#cart-count').removeClass('animate'), 300);
+            }
+        });
+    </script>
+
+
+
 
 @endsection

@@ -83,7 +83,64 @@
       /* Slightly darker on hover */
       color: white;
     }
+
+    <style>.cart-btn {
+      background-color: #0d6efd;
+      /* Bootstrap primary */
+      border-radius: 50px;
+      font-weight: 500;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .cart-btn:hover {
+      background-color: #084298;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background-color: #dc3545;
+      color: #fff;
+      font-size: 12px;
+      padding: 3px 7px;
+      border-radius: 50%;
+      font-weight: bold;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+      transition: all 0.2s ease-in-out;
+    }
+
+    @media (max-width: 576px) {
+      .cart-badge {
+        top: -4px;
+        right: -4px;
+        font-size: 10px;
+        padding: 2px 6px;
+      }
+    }
+
+    .cart-badge.animate {
+      animation: pop 0.4s ease;
+    }
+
+    @keyframes pop {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.4);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
   </style>
+
+  </style>
+
 </head>
 
 <body>
@@ -107,9 +164,13 @@
       <div>
 
         <a href="#" class="text-decoration-none text-light">Become a Seller</a>
-        <a href="{{url('cart-list/product')}}"
-          class="btn theme-green-btn btn-sm text-light ms-1 rounded-pill px-3 py-2"><i
-            class="fa-solid fa-cart-shopping"></i> Cart</a>
+        <a href="{{ url('cart-list/product') }}" class="btn btn-sm position-relative cart-btn text-white px-3 py-2">
+          <i class="fa-solid fa-cart-shopping me-1"></i> Cart
+          <span id="cart-count" class="cart-badge">{{ session('cart') ? count(session('cart')) : 0 }}</span>
+        </a>
+
+
+
 
         @if(!session()->has('user_email'))
 
