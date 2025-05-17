@@ -262,7 +262,6 @@
                                 });
                             @endforeach
 
-
                             function loadSubcategories(categoryId, productId, selectedSubcategoryId = null) {
                                 if (categoryId) {
                                     $.ajax({
@@ -390,7 +389,4 @@
                 });
             });
         </script>
-
-
-
 @endsection

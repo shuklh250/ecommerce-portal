@@ -117,10 +117,7 @@
         </div>
     </section>
 
-
-
     <!-- Best of Electronics -->
-
     <section class="my-5">
         <div class="container">
 
@@ -387,6 +384,10 @@
                 let productId = $(this).data('id');
                 let $card = $(this).closest('.cart-action');
 
+                console.log(productId);
+                console.log($card);
+
+
                 $.ajax({
                     url: "{{ url('add-to-cart') }}",
                     method: "POST",
@@ -397,12 +398,12 @@
                     },
                     success: function (response) {
                         $card.html(`
-                                                            <div class="d-flex justify-content-center align-items-center quantity-controls" data-id="${productId}">
-                                                                <button class="btn btn-sm btn-outline-danger me-2 decrease-qty">−</button>
-                                                                <span class="qty-count">1</span>
-                                                                <button class="btn btn-sm btn-outline-success ms-2 increase-qty">+</button>
-                                                            </div>
-                                                        `);
+                                       <div class="d-flex justify-content-center align-items-center quantity-controls" data-id="${productId}">
+                                        <button class="btn btn-sm btn-outline-danger me-2 decrease-qty">−</button>
+                                         <span class="qty-count">1</span>
+                                        <button class="btn btn-sm btn-outline-success ms-2 increase-qty">+</button>
+                                         </div>
+                                     `);
                         updateCartCount(response.cart_count);
                     }
                 });
@@ -439,10 +440,10 @@
                         product_id: productId
                     }, function (response) {
                         $control.closest('.cart-action').html(`
-                                                                                <button class="btn btn-primary btn-sm w-100 add-to-cart-btn" data-id="${productId}">
-                                                                                    <i class="fas fa-shopping-cart"></i> Add to Cart
-                                                                                </button>
-                                                                            `);
+                                                                                                                <button class="btn btn-primary btn-sm w-100 add-to-cart-btn" data-id="${productId}">
+                                                                                                                    <i class="fas fa-shopping-cart"></i> Add to Cart
+                                                                                                                </button>
+                                                                                                            `);
                         updateCartCount(response.cart_count);
                     });
                 } else {
