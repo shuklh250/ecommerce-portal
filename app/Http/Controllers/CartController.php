@@ -32,14 +32,11 @@ class CartController extends Controller
                     'quantity' => $quantity,
                 ]);
             }
-
-            return response()->json(['status' => 'success', 'message' => 'Added to cart']);
+            $cart_count = 1;
+            return response()->json(['cart_count' => $quantity]);
         }
-
         $cartItems = session('cart_items', []);
-
         $found = false;
-
         foreach ($cartItems as &$item) {
             if ($item['product_id'] == $productId) {
                 $item['quantity'] += $quantity;
@@ -53,23 +50,20 @@ class CartController extends Controller
         }
 
         session(['cart_items' => $cartItems]);
+
         return response()->json(['cart_count' => count($cartItems)]);
         // return response()->json(['status' => 'success', 'message' => 'Added to cart']);
     }
 
     public function update(Request $request)
     {
-
-
-        // dd($request);
         $cart = session()->get('cart', []);
         $id = $request->product_id;
 
         if (isset($cart[$id])) {
-            // Agar product pehle se hai → update quantity
+
             $cart[$id]['quantity'] = $request->quantity;
         } else {
-            // Agar product nahi hai → add karo
             $cart[$id] = [
                 "name" => $request->name,
                 "price" => $request->price,
@@ -78,8 +72,20 @@ class CartController extends Controller
             ];
         }
 
-        // Save back to session
-        session(['cart' => $cart]);
+        if (empty($cart)) {
+            session()->forget('cart');
+        } else {
+            session(['cart' => $cart]);
+        }
+        // session(['cart' => $cart]);
+
+        $cart_count  = 0;
+        foreach ($cart as $items) {
+            $cart_count += $items['quantity'];
+        }
+
+
+        // return response()->json(['cart_count' => $cart_count]);
 
         return response()->json(['cart_count' => count($cart)]);
     }
@@ -89,30 +95,35 @@ class CartController extends Controller
         $cart = session()->get('cart', []);
         $productId = $request->product_id;
 
-        // Agar session me item hai
         if (isset($cart[$productId])) {
 
             $cart[$productId]['quantity']--;
-
-
             if ($cart[$productId]['quantity'] <= 0) {
+
                 unset($cart[$productId]);
-
-
-                Cart::where('user_id', Auth::guard('user')->id())
+                $data =  Cart::where('user_id', Auth::guard('user')->id())
                     ->where('product_id', $productId)
                     ->delete();
             } else {
 
-                Cart::where('user_id', Auth::guard('user')->id())
+                $data =  Cart::where('user_id', Auth::guard('user')->id())
                     ->where('product_id', $productId)
                     ->update(['quantity' => $cart[$productId]['quantity']]);
             }
 
             // Session update
-            session(['cart' => $cart]);
+            if (empty($cart)) {
+                session()->forget('cart');
+            } else {
+                session(['cart' => $cart]);
+            }
         }
 
+        // $cart_count  = 0;
+        // foreach ($cart as $items) {
+        //     $cart_count += $items['quantity'];
+        // }
+        // return response()->json(['cart_count' => $cart_count]);
         return response()->json(['cart_count' => count($cart)]);
     }
 

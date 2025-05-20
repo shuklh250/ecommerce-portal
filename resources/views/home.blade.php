@@ -14,7 +14,7 @@
                 aria-label="Slide 2"></button>
             <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
                 aria-label="Slide 3"></button>
-        </div>
+        </div>  
         <div class="carousel-inner">
             <div class="carousel-item active">
                 <img src="{{asset('assets/images/slider1.png')}}" class="d-block w-100" alt="Slider 1">
@@ -384,7 +384,7 @@
                 let productId = $(this).data('id');
                 let $card = $(this).closest('.cart-action');
 
-                console.log(productId);
+                console.log(productId)
                 console.log($card);
 
 
@@ -398,12 +398,12 @@
                     },
                     success: function (response) {
                         $card.html(`
-                                       <div class="d-flex justify-content-center align-items-center quantity-controls" data-id="${productId}">
-                                        <button class="btn btn-sm btn-outline-danger me-2 decrease-qty">−</button>
-                                         <span class="qty-count">1</span>
-                                        <button class="btn btn-sm btn-outline-success ms-2 increase-qty">+</button>
-                                         </div>
-                                     `);
+                                                                                <div class="d-flex justify-content-center align-items-center quantity-controls" data-id="${productId}">
+                                                                                    <button class="btn btn-sm btn-outline-danger me-2 decrease-qty">−</button>
+                                                                                    <span class="qty-count">1</span>
+                                                                                    <button class="btn btn-sm btn-outline-success ms-2 increase-qty">+</button>
+                                                                                </div>
+                                                                            `);
                         updateCartCount(response.cart_count);
                     }
                 });
@@ -440,10 +440,10 @@
                         product_id: productId
                     }, function (response) {
                         $control.closest('.cart-action').html(`
-                                                                                                                <button class="btn btn-primary btn-sm w-100 add-to-cart-btn" data-id="${productId}">
-                                                                                                                    <i class="fas fa-shopping-cart"></i> Add to Cart
-                                                                                                                </button>
-                                                                                                            `);
+                                                                                                    <button class="btn btn-primary btn-sm w-100 add-to-cart-btn" data-id="${productId}">
+                                                                                                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                                                                                                    </button>
+                                                                                                `);
                         updateCartCount(response.cart_count);
                     });
                 } else {
